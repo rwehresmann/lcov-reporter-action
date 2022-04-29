@@ -27,11 +27,16 @@ async function main() {
 		return
 	}
 
+	core.debug("Let's go")
+
 	const baseRaw =
 		baseFile && (await fs.readFile(baseFile, "utf-8").catch(err => null))
 	if (baseFile && !baseRaw) {
 		console.log(`No coverage report found at '${baseFile}', ignoring...`)
 	}
+
+	core.debug("baseRaw")
+	core.debug(baseRaw)
 
 	const options = {
 		repository: context.payload.repository.full_name,
@@ -57,8 +62,18 @@ async function main() {
 	}
 
 	const lcov = await parse(raw)
+
+	core.debug("lcov")
+	core.debug(lcov)
+
 	const baselcov = baseRaw && (await parse(baseRaw))
 	const body = diff(lcov, baselcov, options).substring(0, MAX_COMMENT_CHARS)
+
+	core.debug("options")
+	core.debug(options)
+
+	core.debug("body")
+	core.debug(body)
 
 	if (shouldDeleteOldComments) {
 		await deleteOldComments(githubClient, options, context)
